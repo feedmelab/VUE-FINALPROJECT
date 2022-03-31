@@ -28,10 +28,16 @@ export const useUserStore = defineStore("user", {
 				email: email,
 				password: password,
 			});
+
 			if (error) throw error;
-			else await router.push("/");
+			router.push("/");
 		},
-		async signOut() {},
+		async signOut() {
+			let { error } = await supabase.auth.signOut();
+			router.push("/auth");
+			if (error) throw error;
+			else router.push("/auth");
+		},
 		persist: {
 			enabled: true,
 			strategies: [

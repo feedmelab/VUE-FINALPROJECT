@@ -1,5 +1,5 @@
 <script setup>
-	import { defineAsyncComponent, ref } from "vue";
+	import { defineAsyncComponent, ref, computed } from "vue";
 	import { useUserStore } from "../stores/user";
 	import JSConfetti from "js-confetti";
 
@@ -40,11 +40,18 @@
 		toggleSign(1);
 		showConfetti();
 	}
+	const createBackgroundString = computed(() => {
+		return `linear-gradient(${x.value}deg, rgba(96, 165, 250 ,${x.value}), rgb(17, 24, 39))`;
+	});
 	//fin burradas
 </script>
 
 <template>
-	<div class="min-h-screen flex flex-col items-center justify-start bg-blue-400">
+	<div
+		class="home min-h-screen flex flex-col items-center justify-start bg-blue-400"
+		@mousemove="onMousemove"
+		:style="{ backgroundImage: createBackgroundString }"
+	>
 		<div
 			class="m-10 p-10 w-1/2 max-w-sm mx-auto bg-white rounded shadow-lg flex items-center space-x-4"
 			@mousemove="onMousemove"
@@ -56,7 +63,7 @@
 			<div>
 				<div class="text-xl font-medium text-black">Welcome to Feed Me Lab</div>
 				<p class="text-white">
-					<a href="#" v-if="!signedIn" @click="toggleSign(1)">Sign In</a><a v-else>Sign Out</a> |
+					<a href="#" v-if="!signedIn" @click="toggleSign(1)">Sign In</a><a @click="signOut()" v-else>Sign Out</a> |
 					<a href="#" @click="toggleSign(0)">Sign Up</a>
 				</p>
 			</div>
@@ -68,4 +75,8 @@
 		<SignUpC v-if="signUp" @subscribe="subscribeUser" />
 	</div>
 </template>
-<style scoped></style>
+<style scoped>
+	.home {
+		background: linear-gradient(rgb(96, 165, 250), rgb(17, 24, 39));
+	}
+</style>

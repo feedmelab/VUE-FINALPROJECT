@@ -11,7 +11,11 @@ export const useTaskStore = defineStore("tasks", {
 		async fetchTasks() {
 			try {
 				const { data: tasks } = await supabase.from("tasks").select("*").order("id", { ascending: true });
+				tasks.forEach((t) => {
+					t.editing = false;
+				});
 				this.tasks = tasks;
+				console.log(this.tasks);
 			} catch (error) {
 				console.error(error);
 			}
@@ -27,6 +31,12 @@ export const useTaskStore = defineStore("tasks", {
 			if (error) throw error;
 			this.fetchTasks();
 		},
+		async setUpdateTask(id, value) {
+			const { data, error } = await supabase.from("tasks").update({ title: value, updated_at: new Date().toUTCString() }).match({ id: id });
+			this.fetchTasks();
+			if (data) return data;
+			if (error) throw error;
+		},
 		async setCompletedTask(id_task, value) {
 			const { data, error } = await supabase
 				.from("tasks")
@@ -38,6 +48,18 @@ export const useTaskStore = defineStore("tasks", {
 		},
 		async updateTask(id_task, value) {
 			const { data, error } = await supabase.from("tasks").update({ title: value }).match({ id: id_task });
+			this.fetchTasks();
+			if (data) return data;
+			if (error) throw error;
+		},
+		async removeTask(id_task) {
+			const { data, error } = await supabase.from("tasks").delete().match({ id: id_task });
+			this.fetchTasks();
+			if (data) return data;
+			if (error) throw error;
+		},
+		async removeAll(estado) {
+			const { data, error } = await supabase.from("tasks").delete().match({ is_complete: estado });
 			this.fetchTasks();
 			if (data) return data;
 			if (error) throw error;
