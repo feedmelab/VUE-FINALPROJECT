@@ -94,7 +94,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="container flex flex-row justify-end caixa_user p-2">
+		<div class="container flex flex-row justify-end caixa_user p-2" v-if="User.user.email">
 			<p>
 				Logged as: <span>{{ User.user.email ? User.user.email.split("@")[0] : null }}</span> | <a href="#" @click="logout()">logout</a>
 			</p>
