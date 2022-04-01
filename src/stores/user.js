@@ -32,7 +32,6 @@ export const useUserStore = defineStore("user", {
 			if (user) {
 				this.user = user;
 				console.log(this.user);
-				router.push("/");
 			}
 		},
 		async signOut() {

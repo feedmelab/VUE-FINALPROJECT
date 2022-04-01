@@ -5,12 +5,14 @@
 	import useFormValidation from "../modules/useFormValidation";
 	import useSubmitButtonState from "../modules/useSubmitButtonState";
 	import { useUserStore } from "../stores/user";
+	import { useRouter } from "vue-router";
 
 	let user = reactive({
 		email: "",
 		password: "",
 	});
 
+	const redirect = useRouter();
 	const { errors } = useFormValidation();
 	const { isSignupButtonDisabled } = useSubmitButtonState(user, errors);
 
