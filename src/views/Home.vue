@@ -67,9 +67,7 @@
 	};
 
 	const pending = computed(() => {
-		const orderFilth = todos.value.filter((todo) => !todo.is_complete);
-		console.log("Order Filth pending", orderFilth);
-		return orderFilth;
+		return todos.value.filter((todo) => !todo.is_complete);
 	});
 
 	const completed = computed(() => {
@@ -81,7 +79,12 @@
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
 	};
-
+	const beforeEnter = (id) => {
+		console.log("Before enter", id);
+		//let element = document.querySelector(`#${id}`);
+		// console.log(element);
+		// element.scrollIntoView({ behavior: "smooth" });
+	};
 	onMounted(async () => {
 		await tasks.fetchTasks();
 		todos.value = await useTaskStore().tasks;
@@ -109,7 +112,7 @@
 			</p>
 		</div>
 		<div class="container flex flex-col items-center justify-center bg-gray-light pt-5 topsweeted">
-			<h3 class="mt-10">THE TODO APP</h3>
+			<h3 class="mt-3">THE TODO APP</h3>
 			<div>
 				<div id="app" class="flex w-screen h-auto p-4">
 					<div class="w-1/4 h-full w-full bg-grey-darkest"></div>
@@ -179,7 +182,7 @@
 														</div>
 														<!-- FIN PRIMERA ICONA -->
 														<!-- CAJA TEXTO CENTRAL -->
-														<div class="w-full p-2 grid justify-items-stretch">
+														<div class="w-full p-2 grid justify-items-stretch" v-on:before-enter="beforeEnter(todo.id)" id="{{todo.id}}">
 															<p class="text-left bloque-texto w-full"><span>Task: </span>{{ todo.title }}</p>
 															<div class="extra-info justify-self-start mb-0 mt-2">
 																<p class="w-full" v-if="todo.inserted_at"><span>Started at:</span> {{ todo.inserted_at.split(".", 1) }}</p>
@@ -315,10 +318,11 @@
 											v-for="todo in completed"
 											:key="todo.id"
 										>
-											<TransitionGroup tag="div" name="fade" class="container" appear>
+											<TransitionGroup tag="div" name="fade" class="container" appear v-on:before-enter="beforeEnter(todo.id)">
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-blue-500 p-3 shadow-md rounded-lg"
 													:key="todo.id"
+													:id="todo.id"
 												>
 													<!-- first icon -->
 													<div class="w-8">
