@@ -9,6 +9,7 @@
 	const newTodo = ref("");
 	const newEditTodo = ref("");
 	const todos = ref([]);
+	const el = ref();
 
 	const addTodo = async (todo) => {
 		const task = {
@@ -25,6 +26,7 @@
 		} finally {
 			todos.value = tasks.tasks;
 			newTodo.value = "";
+			beforeEnter();
 		}
 	};
 
@@ -40,6 +42,7 @@
 		await useTaskStore().setCompletedTask(id, value);
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
+		beforeEnter();
 	};
 
 	const editTodo = (id, value) => {
@@ -53,7 +56,7 @@
 		showEditSplash(id);
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
-		console.log(id);
+		beforeEnter();
 	};
 	const showEditSplash = (id) => {
 		todos.value.filter((t) => {
@@ -79,11 +82,8 @@
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
 	};
-	const beforeEnter = (id) => {
-		console.log("Before enter", id);
-		//let element = document.querySelector(`#${id}`);
-		// console.log(element);
-		// element.scrollIntoView({ behavior: "smooth" });
+	const beforeEnter = () => {
+		el.value.scrollIntoView({ behavior: "smooth" });
 	};
 	onMounted(async () => {
 		await tasks.fetchTasks();
@@ -146,6 +146,7 @@
 								</div>
 							</Transition>
 						</div>
+
 						<template v-if="todos.value">
 							<h4 class="flex-1 font-sans font-thin text-center text-3xl text-grey-darker bg-teal-lighter p-4 m-1">No todos yet</h4>
 						</template>
@@ -182,7 +183,7 @@
 														</div>
 														<!-- FIN PRIMERA ICONA -->
 														<!-- CAJA TEXTO CENTRAL -->
-														<div class="w-full p-2 grid justify-items-stretch" v-on:before-enter="beforeEnter(todo.id)" id="{{todo.id}}">
+														<div class="w-full p-2 grid justify-items-stretch">
 															<p class="text-left bloque-texto w-full"><span>Task: </span>{{ todo.title }}</p>
 															<div class="extra-info justify-self-start mb-0 mt-2">
 																<p class="w-full" v-if="todo.inserted_at"><span>Started at:</span> {{ todo.inserted_at.split(".", 1) }}</p>
@@ -243,6 +244,7 @@
 														</div>
 														<!-- FIN BOTONERA LATERAL -->
 													</template>
+
 													<!-- PENDIENTE EDITVIEW -->
 													<template v-else-if="todo.editing">
 														<div class="w-8">
@@ -310,14 +312,17 @@
 									</template>
 									<template v-else><p class="nothing">No tasks pending yet</p></template>
 								</div>
+
 								<div class="todo-cards w-full flex flex-col justify-start">
 									<span class="text-2/1 text-blue-400">Completados</span>
+									<div ref="el"></div>
 									<template v-if="completed.length">
 										<div
 											class="completed flex flex-row w-full h-auto flex-col p-1 mt-4 rounded-lg"
 											v-for="todo in completed"
 											:key="todo.id"
 										>
+											<div ref="el"></div>
 											<TransitionGroup tag="div" name="fade" class="container" appear v-on:before-enter="beforeEnter(todo.id)">
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-blue-500 p-3 shadow-md rounded-lg"
