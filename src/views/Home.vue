@@ -9,6 +9,7 @@
 	const newTodo = ref("");
 	const newEditTodo = ref("");
 	const todos = ref([]);
+
 	const addTodo = async (todo) => {
 		const task = {
 			user_id: User.user.id,
@@ -26,17 +27,21 @@
 			newTodo.value = "";
 		}
 	};
+
 	const logout = async () => {
 		await useUserStore().signOut();
 	};
+
 	const onMousemove = (e) => {
 		x.value = e.clientX;
 	};
+
 	const setCompleteTodo = async (id, value) => {
 		await useTaskStore().setCompletedTask(id, value);
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
 	};
+
 	const editTodo = (id, value) => {
 		newEditTodo.value = value;
 		todos.value.filter((t) => {
@@ -62,8 +67,11 @@
 	};
 
 	const pending = computed(() => {
-		return todos.value.filter((todo) => !todo.is_complete);
+		const orderFilth = todos.value.filter((todo) => !todo.is_complete);
+		console.log("Order Filth pending", orderFilth);
+		return orderFilth;
 	});
+
 	const completed = computed(() => {
 		return todos.value.filter((todo) => todo.is_complete);
 	});
@@ -73,6 +81,7 @@
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
 	};
+
 	onMounted(async () => {
 		await tasks.fetchTasks();
 		todos.value = await useTaskStore().tasks;
@@ -125,7 +134,7 @@
 										Añadir Tarea
 									</button>
 									<button
-										class="flex-no-shrink border-transparent border-4 text-red hover:text-teal-darker text-sm py-1 px-2 rounded"
+										class="cancel flex-no-shrink border-transparent border-4 text-red hover:text-teal-darker text-sm py-1 px-2 rounded"
 										type="button"
 										@click="cancelTodo()"
 									>
@@ -143,11 +152,11 @@
 								<div class="todo-cards w-full flex flex-col justify-start">
 									<span class="text-3 text-red-500">Pendientes</span>
 									<template v-if="pending.length">
-										<div class="flex flex-row w-full h-auto flex-col p-1 mt-4 rounded-lg" v-for="todo in pending" :key="todo.user_id">
+										<div class="flex flex-row w-full h-auto flex-col p-1 mt-4 rounded-lg" v-for="todo in pending" :key="todo.id">
 											<TransitionGroup tag="div" name="fade" class="container" appear>
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-gray-500 p-3 shadow-md rounded-lg"
-													:key="todo.user_id"
+													:key="todo.id"
 												>
 													<!-- STD VIEW -->
 													<template v-if="!todo.editing">
@@ -304,12 +313,12 @@
 										<div
 											class="completed flex flex-row w-full h-auto flex-col p-1 mt-4 rounded-lg"
 											v-for="todo in completed"
-											:key="todo.user_id"
+											:key="todo.id"
 										>
 											<TransitionGroup tag="div" name="fade" class="container" appear>
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-blue-500 p-3 shadow-md rounded-lg"
-													:key="todo.user_id"
+													:key="todo.id"
 												>
 													<!-- first icon -->
 													<div class="w-8">
@@ -465,7 +474,16 @@
 		width: 10rem;
 		height: 2rem;
 		color: white;
-		background-color: rgba(21, 1, 54, 0.42);
+		background-color: #150136;
+		border: 1px solid rgba(21, 1, 54, 0.17);
+	}
+	button.cancel {
+		font-size: 0.7rem;
+		margin-right: 0.4rem;
+		width: 10rem;
+		height: 2rem;
+		color: white;
+		background-color: #df0000;
 		border: 1px solid rgba(21, 1, 54, 0.17);
 	}
 	.new-todo textarea {

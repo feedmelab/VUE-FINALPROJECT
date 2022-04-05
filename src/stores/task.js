@@ -10,12 +10,12 @@ export const useTaskStore = defineStore("tasks", {
 	actions: {
 		async fetchTasks() {
 			try {
-				const { data: tasks } = await supabase.from("tasks").select("*").order("id", { ascending: true });
-				tasks.forEach((t) => {
+				const { data, error } = await supabase.from("tasks").select("*").order("id", { ascending: false });
+				data.forEach((t) => {
 					t.editing = false;
 				});
 				this.tasks = tasks;
-				console.log(this.tasks);
+				console.log("Tasks en fetch task", this.tasks);
 			} catch (error) {
 				console.error(error);
 			}
