@@ -10,6 +10,7 @@
 	const newEditTodo = ref("");
 	const todos = ref([]);
 	const el = ref();
+	const ell = ref();
 
 	const addTodo = async (todo) => {
 		const task = {
@@ -26,7 +27,7 @@
 		} finally {
 			todos.value = tasks.tasks;
 			newTodo.value = "";
-			beforeEnter();
+			beforeEnterCompleted();
 		}
 	};
 
@@ -42,7 +43,7 @@
 		await useTaskStore().setCompletedTask(id, value);
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
-		beforeEnter();
+		beforeEnterCompleted();
 	};
 
 	const editTodo = (id, value) => {
@@ -56,7 +57,7 @@
 		showEditSplash(id);
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
-		beforeEnter();
+		beforeEnterCompleted();
 	};
 	const showEditSplash = (id) => {
 		todos.value.filter((t) => {
@@ -82,8 +83,15 @@
 		await useTaskStore().fetchTasks();
 		todos.value = tasks.tasks;
 	};
-	const beforeEnter = () => {
-		el.value.scrollIntoView({ behavior: "smooth" });
+	const beforeEnterCompleted = async () => {
+		const element = await el.value;
+
+		element.scrollIntoView({ block: "start", behavior: "smooth", inline: "nearest" });
+	};
+	const beforeEnterPending = async () => {
+		const element = await ell.value;
+
+		element.scrollIntoView({ block: "start", behavior: "smooth", inline: "nearest" });
 	};
 	onMounted(async () => {
 		await tasks.fetchTasks();
@@ -156,11 +164,13 @@
 								<div class="todo-cards w-full flex flex-col justify-start">
 									<span class="text-3 text-red-500">Pendientes</span>
 									<template v-if="pending.length">
+										<div ref="ell"></div>
 										<div class="flex flex-row w-full h-auto flex-col p-1 mt-4 rounded-lg" v-for="todo in pending" :key="todo.id">
 											<TransitionGroup tag="div" name="fade" class="container" appear>
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-gray-500 p-3 shadow-md rounded-lg"
 													:key="todo.id"
+													v-on:before-enter="beforeEnterPending()"
 												>
 													<!-- STD VIEW -->
 													<template v-if="!todo.editing">
@@ -322,14 +332,15 @@
 											v-for="todo in completed"
 											:key="todo.id"
 										>
-											<div ref="el"></div>
-											<TransitionGroup tag="div" name="fade" class="container" appear v-on:before-enter="beforeEnter(todo.id)">
+											<TransitionGroup tag="div" name="fade" class="container" appear>
 												<div
 													class="flex flex-row font-sans font-light h-24 text-1 text-center bg-blue-500 p-3 shadow-md rounded-lg"
 													:key="todo.id"
 													:id="todo.id"
+													v-on:before-enter="beforeEnterCompleted()"
 												>
 													<!-- first icon -->
+
 													<div class="w-8">
 														<svg
 															xmlns="http://www.w3.org/2000/svg"
